@@ -16,10 +16,8 @@ namespace TollCollectorLib.BillingSystem
         }
 
 
-        public IEnumerable<Account> GetAccounts()
-        {
-            return accounts.Select(x => x.Value);
-        }
+        public IEnumerable<Account> GetAccounts() 
+            => accounts.Select(x => x.Value);
 
         public static AccountList FetchAccounts(string countyName)
         {
@@ -29,10 +27,12 @@ namespace TollCollectorLib.BillingSystem
                 return null;
             }
 
-            ret.accounts = new Dictionary<string, Account>();
-            ret.accounts.Add("BSF-846-WA", new Account("BSF-846-WA", new Owner("Greg", "Smith")));
-            ret.accounts.Add("23456-WA", new Account("23456-WA", new Owner("Simon", "Jones")));
-            ret.accounts.Add("AABBCC-DD-WA", new Account("AABBCC-DD-WA", new Owner("Sara", "Green")));
+            ret.accounts = new Dictionary<string, Account>
+            {
+                { "BSF-846-WA", new Account("BSF-846-WA", new Owner("Greg", "Smith")) },
+                { "23456-WA", new Account("23456-WA", new Owner("Simon", "Jones")) },
+                { "AABBCC-DD-WA", new Account("AABBCC-DD-WA", new Owner("Sara", "Green")) }
+            };
 
             return ret;
         }
@@ -40,8 +40,7 @@ namespace TollCollectorLib.BillingSystem
         public async Task<Account> LookupAccountAsync(string license)
         {
             await Task.Delay(300);
-            Account account = null;
-            if (accounts.TryGetValue(license, out account))
+            if (accounts.TryGetValue(license, out Account account))
             {
                 return account;
             }

@@ -8,41 +8,19 @@ namespace TollCollectorLib.BillingSystem
 {
     public class Account
     {
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new();
 
         public Account(string license, Owner owner)
         {
-            this.license = license;
+            this.License = license;
             this.Owner = owner;
         }
 
-        private readonly string license;
-        private Owner owner;
+        public Owner Owner { get; private set; }
 
-        public Owner Owner
-        {
-            get { return owner; }
-            private set
-            {
-                owner = value;
-            }
-        }
+        public string License { get; }
 
-        public string License
-        {
-            get
-            {
-                return license;
-            }
-        }
-
-        public string State
-        {
-            get
-            {
-                return license.Substring(license.Length - 2);
-            }
-        }
+        public string State => License[^2..];
 
         public static string GenerateTestLicense()
         {
@@ -53,6 +31,17 @@ namespace TollCollectorLib.BillingSystem
 
             for (int i = 0; i < numberLength; i++)
             {
+                RandomAlphaNumeric(builder);
+            }
+
+            builder.Append('-');
+
+            builder.Append(states[_random.Next(1, states.Length) - 1]);
+
+            return builder.ToString();
+
+            static void RandomAlphaNumeric(StringBuilder builder)
+            {
                 if (Convert.ToBoolean(_random.Next(0, 2)))
                 {
                     builder.Append((char)('0' + _random.Next(0, 10)));
@@ -62,12 +51,22 @@ namespace TollCollectorLib.BillingSystem
                     builder.Append((char)('A' + _random.Next(0, 26)));
                 }
             }
+        }
 
-            builder.Append('-');
+        public static string GenerateTestLicenseViaLinq()
+        {
+            var states = new string[] { "BC", "CA", "ID", "OR", "WA" };
 
-            builder.Append(states[_random.Next(1, states.Length) - 1]);
+            var range = Enumerable.Range(0, _random.Next(4, 8));
+            return string.Join("", range.Select(x => RandomAlphaNumeric()))
+                      + $"-{states[_random.Next(1, states.Length) - 1]}";
 
-            return builder.ToString();
+            static string RandomAlphaNumeric()
+            {
+                return Convert.ToBoolean(_random.Next(0, 2))
+                    ? ((char)('0' + _random.Next(0, 10))).ToString()
+                    : ((char)('A' + _random.Next(0, 26))).ToString();
+            }
         }
     }
 }
